@@ -13,6 +13,8 @@ on:
     # 周末：每 6 小时一次，确认系统仍健康
     - cron: "5 */6 * * 0,6"
   workflow_dispatch: {}      # 支持手动触发
+  push:
+    branches: [main]         # 代码推送即跑一轮（兼作首次启动）
 
 # 串行执行，避免两轮同时改 state
 concurrency:

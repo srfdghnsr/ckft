@@ -1,4 +1,4 @@
-# quant-simtrader · A股 + 期货 模拟交易看板
+# ckft · A股 + 期货 模拟交易看板
 
 用**真实行情数据**驱动、**模拟撮合**的自动化交易看板。双独立账户（A股 ¥10,000 / 期货 ¥10,000），按固定的六条交易规则全自动产生信号并撮合。
 
@@ -8,7 +8,7 @@
 
 GitHub Pages 托管自动刷新的静态看板（由 Actions 定时任务产出）：
 
-- **https://srfdghnsr.github.io/quant-simtrader/**
+- **https://srfdghnsr.github.io/ckft/**
 
 ## 运行架构
 
@@ -19,7 +19,7 @@ GitHub Actions（cron 定时唤醒）
    │  ③ 把 state 写回 state 分支（单提交，不留历史）
    │  ④ 生成静态看板 → 部署 GitHub Pages
    ▼
-https://srfdghnsr.github.io/quant-simtrader/   （5 分钟自动刷新）
+https://srfdghnsr.github.io/ckft/   （5 分钟自动刷新）
 ```
 
 GitHub Actions 的 runner 是一次性的、单 job 最长 6 小时，**无法常驻进程**，因此这里采用「定时唤醒 + 状态持久化」的方案，而不是长驻 Web 服务。本地仍可跑真正的实时 WebSocket 服务（见下）。
