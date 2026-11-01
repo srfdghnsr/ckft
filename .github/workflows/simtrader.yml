@@ -30,6 +30,8 @@ jobs:
   tick:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      pages_ready: ${{ steps.pages.outcome == 'success' }}
     steps:
       - name: 拉取代码
         uses: actions/checkout@v4
@@ -85,17 +87,22 @@ jobs:
           echo "state 已更新：$COMMIT"
 
       - name: 配置 Pages
+        id: pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true       # 仓库未开启 Pages 时自动开启（源=GitHub Actions）
+        # 注意：不能用 enablement，创建 Pages 站点需要仓库管理员权限，
+        # GITHUB_TOKEN 没有该权限（会报 Resource not accessible by integration）。
+        # Pages 需在仓库 Settings → Pages 一次性开启，源选择 “GitHub Actions”。
+        continue-on-error: true    # Pages 异常不应阻断模拟撮合主链路
 
       - name: 上传站点产物
+        if: steps.pages.outcome == 'success'
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
 
   deploy:
     needs: tick
+    if: needs.tick.outputs.pages_ready == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
