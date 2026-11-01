@@ -1,0 +1,8 @@
+# 仓库内统一按 LF 存储；检出时 Windows 侧仍可用 CRLF
+* text=auto eol=lf
+
+# 明确二进制
+*.png binary
+*.jpg binary
+*.ico binary
+*.zip binary

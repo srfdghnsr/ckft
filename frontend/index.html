@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模拟交易看板 · A股+期货</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="header">
+  <h1>模拟交易看板</h1>
+  <span class="badge">模拟交易 · 非真实下单</span>
+  <span class="badge" style="background:#1d2a3a;color:#6aa6ff;border-color:#2a3a5a">真实实时行情驱动</span>
+  <div class="status" id="status">连接中…</div>
+</div>
+
+<div class="warnbox">
+  本系统行情为真实实时数据，但所有买卖均为<strong>模拟撮合</strong>，不产生真实资金变动。
+  策略规则来自用户提供的交易模式图，属观测性结论，<strong>不保证盈利</strong>。期货为杠杆品种，风险更高。
+</div>
+
+<div class="grid">
+  <!-- 总览 -->
+  <div class="card">
+    <h2>账户总览</h2>
+    <div class="kpi" id="overview"></div>
+    <div class="note" id="drawdown"></div>
+  </div>
+
+  <!-- 实时行情 -->
+  <div class="card">
+    <h2>实时行情（点击查看K线）</h2>
+    <div class="scroll" style="max-height:320px">
+      <table id="quoteTable">
+        <thead><tr><th>标的</th><th>名称</th><th>最新价</th><th>涨跌幅</th><th>量比/量</th><th>持仓</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 持仓 + 信号 -->
+  <div class="card">
+    <h2>当前持仓</h2>
+    <div class="scroll" id="positions" style="max-height:150px"></div>
+    <h2 style="margin-top:10px">近期信号</h2>
+    <div class="scroll" id="signals" style="max-height:140px"></div>
+    <h2 style="margin-top:10px">候选池（信号驱动·仅触发信号者入池）</h2>
+    <div class="note">候选池为信号驱动：只有触发交易信号的标的才会被纳入（外加当前持仓）。覆盖范围 = 主板A股 + 场内基金。自动执行时仍受资金/涨跌停/T+1 等约束，未必成交。</div>
+    <div class="scroll" id="candidates" style="max-height:160px"></div>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- K线 -->
+  <div class="card">
+    <h2>K线 · <span id="klineSym">—</span></h2>
+    <canvas id="klineChart" height="280"></canvas>
+    <div class="note">蜡烛为日线；红线为信号入场价，蓝线为保护止损位。</div>
+  </div>
+
+  <!-- 权益曲线 -->
+  <div class="card">
+    <h2>权益曲线</h2>
+    <canvas id="equityChart" height="280"></canvas>
+    <div class="note">蓝=A股账户，橙=期货账户（初始各 ¥10,000）。</div>
+  </div>
+
+  <!-- 参数面板 -->
+  <div class="card">
+    <h2>策略参数（六规则）</h2>
+    <div class="row" id="paramForm"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn primary" id="saveParams">保存参数</button>
+      <button class="btn" id="resetBtn">重置账户</button>
+    </div>
+    <h2 style="margin-top:14px">监控范围（候选池准入范围）</h2>
+    <div class="note">候选池覆盖范围由准入规则决定（主板A股 + 场内基金，自动剔除科创板/创业板/北交所）。下方为实时扫描的“监控范围”，可收窄；开启“全市场扫描”后覆盖全部合格标的。</div>
+    <div class="field" style="width:100%">
+      <span>A股（逗号分隔，sh/sz+代码；含场内基金如 sh510300）</span>
+      <input id="wlAstock" style="width:100%">
+    </div>
+    <div class="field" style="width:100%;margin-top:6px">
+      <span>期货（逗号分隔，如 hf_rb2611, hf_ma2611；仅支持商品期货）</span>
+      <input id="wlFuture" style="width:100%">
+    </div>
+    <button class="btn" id="saveWl" style="margin-top:8px">保存监控范围</button>
+    <button class="btn" id="refreshUniv" style="margin-top:8px">刷新全市场范围</button>
+    <div class="note">改参数/监控范围即时生效并持久化。</div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

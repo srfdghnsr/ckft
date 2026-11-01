@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 运行时产物
+data/state.json
+data/state.json.tmp
+docs/
+*.log
+
+# 本地数据源缓存（体积大、可重建）
+.cache/
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
