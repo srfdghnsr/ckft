@@ -208,6 +208,18 @@ class SimEngine:
                 self._fallback_kline_price(sym, q)
                 self._apply_akshare_fallback(sym, q)   # A股主源失败时回退 akshare
 
+    def _refill_missing_prices(self):
+        """日线到位后，补齐此前因缺日线而无法定价的标的。
+
+        冷启动（如 GitHub Actions 每次都是全新进程）时，tick 的顺序是
+        「先刷行情 → 后拉日线」，行情阶段 self.klines 尚为空，
+        商品期货没有逐笔实时源，只能落到 ok=False。日线拉到后必须回头补一次，
+        否则该轮期货价格恒为空（本地长驻服务因跨轮累积日线而不暴露此问题）。
+        """
+        for sym, q in self.quotes.items():
+            if not q.get("ok"):
+                self._fallback_kline_price(sym, q)
+
     def _fallback_kline_price(self, sym, q):
         """商品期货无逐笔实时时，用日线最后一根（成形K线，盘中更新）作为当前价。"""
         bars = self.klines.get(sym)
@@ -319,6 +331,7 @@ class SimEngine:
             if time.time() - self._last_kline_ts > KLINE_REFRESH_INTERVAL:
                 self._refresh_quotes_full()
                 self.refresh_klines()
+                self._refill_missing_prices()      # 日线到位后补齐期货等缺价标的
                 self._last_kline_ts = time.time()
             else:
                 self._refresh_quotes_hot()
@@ -327,6 +340,7 @@ class SimEngine:
             self._refresh_quotes_scope()
             if time.time() - self._last_kline_ts > KLINE_REFRESH_INTERVAL:
                 self.refresh_klines()
+                self._refill_missing_prices()
                 self._last_kline_ts = time.time()
 
         if self.market_open:
